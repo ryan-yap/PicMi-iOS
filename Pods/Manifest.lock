@@ -1,0 +1,34 @@
+PODS:
+  - Alamofire (1.2.0)
+  - AlecrimCoreData (3.0-beta.6)
+  - Socket.IO-Client-Swift (2.0.3)
+  - Stripe (3.1.0):
+    - Stripe/Core (= 3.1.0)
+  - Stripe/Core (3.1.0)
+  - SwiftyJSON (2.1.3)
+
+DEPENDENCIES:
+  - Alamofire
+  - AlecrimCoreData (~> 3.0-beta.6)
+  - Socket.IO-Client-Swift
+  - Stripe
+  - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`, branch `xcode6.3`)
+
+EXTERNAL SOURCES:
+  SwiftyJSON:
+    :branch: xcode6.3
+    :git: https://github.com/SwiftyJSON/SwiftyJSON.git
+
+CHECKOUT OPTIONS:
+  SwiftyJSON:
+    :commit: 008a09d7ea8b13c03fb59b35c01aad339584a5e1
+    :git: https://github.com/SwiftyJSON/SwiftyJSON.git
+
+SPEC CHECKSUMS:
+  Alamofire: d765c5c1713aa64106b0228aaa600a1e6851f68d
+  AlecrimCoreData: c7129f12baa0a4f0d95e3b66a7519adb99a45edb
+  Socket.IO-Client-Swift: 7056c5d80491edc1fbe7462070c249635a86959e
+  Stripe: 8a456332f4db97bd0b8457fc8cce1e1a69ac0cd1
+  SwiftyJSON: a561c2a840121085bec8a2dfeac97a360fc66901
+
+COCOAPODS: 0.36.3
