@@ -34,6 +34,7 @@
     webViewController.options = options;
     self = [super initWithRootViewController:webViewController];
     if (self) {
+        self.navigationBar.translucent = NO;
         _webViewController = webViewController;
         _previousStyle = [[UIApplication sharedApplication] statusBarStyle];
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
@@ -85,11 +86,11 @@
 @implementation STPCheckoutViewController
 
 - (instancetype)initWithNibName:(__unused NSString *)nibNameOrNil bundle:(__unused NSBundle *)nibBundleOrNil {
-    return [self initWithOptions:nil];
+    return [self initWithOptions:[[STPCheckoutOptions alloc] init]];
 }
 
 - (instancetype)initWithCoder:(__unused NSCoder *)coder {
-    return [self initWithOptions:nil];
+    return [self initWithOptions:[[STPCheckoutOptions alloc] init]];
 }
 
 - (instancetype)initWithOptions:(STPCheckoutOptions *)options {
@@ -142,11 +143,11 @@
         [self.checkoutDelegate checkoutController:self
                                    didCreateToken:token
                                        completion:^(STPBackendChargeResult status, NSError *error) {
+                                           self.backendChargeSuccessful = (status == STPBackendChargeResultSuccess);
+                                           self.backendChargeError = error;
                                            if (status == STPBackendChargeResultSuccess) {
                                                [adapter evaluateJavaScript:payload[@"success"]];
                                            } else {
-                                               self.backendChargeSuccessful = (status == STPBackendChargeResultSuccess);
-                                               self.backendChargeError = error;
                                                NSString *encodedError = @"";
                                                if (error.localizedDescription) {
                                                    encodedError = [[NSString alloc]

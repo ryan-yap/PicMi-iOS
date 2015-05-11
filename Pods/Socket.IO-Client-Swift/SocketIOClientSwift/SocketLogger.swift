@@ -26,18 +26,29 @@ import Foundation
 
 protocol SocketLogClient {
     var log:Bool {get set}
+    var logType:String {get}
 }
 
 final class SocketLogger {
-    static func log(message:String, client:SocketLogClient) {
-        if client.log {
-            NSLog("%@", message)
+    private static let printQueue = dispatch_queue_create("printQueue", DISPATCH_QUEUE_SERIAL)
+    
+    static func log(message:String, client:SocketLogClient, altType:String? = nil) {
+        if !client.log {
+            return
+        }
+        
+        dispatch_async(printQueue) {[type = client.logType] in
+            NSLog("%@: %@", altType ?? type, message)
         }
     }
     
-    static func err(message:String, client:SocketLogClient) {
-        if client.log {
-            NSLog("ERROR %@", message)
+    static func err(message:String, client:SocketLogClient, altType:String? = nil) {
+        if !client.log {
+            return
+        }
+        
+        dispatch_async(printQueue) {[type = client.logType] in
+            NSLog("ERROR %@: %@", altType ?? type, message)
         }
     }
 }

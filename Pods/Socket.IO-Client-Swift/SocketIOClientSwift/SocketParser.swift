@@ -22,7 +22,7 @@
 
 import Foundation
 
-class SocketParser {
+class SocketParser {    
     private static let shredder = SocketParser.PacketShredder()
     
     // Translation of socket.io-parser#deconstructPacket
@@ -103,11 +103,11 @@ class SocketParser {
                 }
             }
             
-            if buf.toInt() == nil || arr[i] != "-" {
+            if let holders = buf.toInt() where arr[i] == "-" {
+                placeholders = holders
+            } else {
                 NSLog("Error parsing \(str)")
                 return nil
-            } else {
-                placeholders = buf.toInt()!
             }
         }
         
@@ -161,7 +161,7 @@ class SocketParser {
         var err:NSError?
         let stringData = data.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
         let parsed:AnyObject? = NSJSONSerialization.JSONObjectWithData(stringData!,
-            options: NSJSONReadingOptions.AllowFragments, error: &err)
+            options: NSJSONReadingOptions.MutableContainers, error: &err)
         
         if err != nil {
             // println(err)
@@ -185,6 +185,8 @@ class SocketParser {
             return nsp == "" && socket.nsp != "/"
         }
         
+        SocketLogger.log("Parsing \(stringMessage)", client: socket, altType: "SocketParser")
+        
         let p:SocketPacket
         
         if let pack = parseString(stringMessage) {
@@ -194,8 +196,9 @@ class SocketParser {
             return
         }
         
+        // Don't call SocketPacket.description unless we need to
         if socket.log {
-            SocketLogger.log("Parser: Decoded packet as: \(p)", client: socket)
+            SocketLogger.log("Decoded packet as: \(p)", client: socket, altType: "SocketParser")
         }
         
         if p.type == SocketPacket.PacketType.EVENT {
@@ -233,18 +236,15 @@ class SocketParser {
                 socket.didConnect()
             }
         } else if p.type == SocketPacket.PacketType.DISCONNECT {
-            socket.engineDidForceClose("Got Disconnect")
+            socket.didDisconnect("Got Disconnect")
         } else if p.type == SocketPacket.PacketType.ERROR {
             socket.didError(p.data == nil ? "Error" : p.data!)
         }
     }
     
-    // Handles binary data
     static func parseBinaryData(data:NSData, socket:SocketIOClient) {
-        // NSLog(data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions.allZeros))
-        
         if socket.waitingData.count == 0 {
-            SocketLogger.err("Parser: Got data when not remaking packet", client: socket)
+            SocketLogger.err("Got data when not remaking packet", client: socket, altType: "SocketParser")
             return
         }
         

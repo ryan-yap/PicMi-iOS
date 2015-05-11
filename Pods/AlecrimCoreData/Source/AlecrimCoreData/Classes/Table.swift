@@ -225,23 +225,23 @@ extension Table {
 
 extension Table {
     
-    public func sum<U>(attributeClosure: (T.Type) -> Attribute<U>) -> U! {
+    public func sum<U>(attributeClosure: (T.Type) -> Attribute<U>) -> U {
         return self.aggregateWithFunctionName("sum", attributeClosure: attributeClosure)
     }
 
-    public func min<U>(attributeClosure: (T.Type) -> Attribute<U>) -> U! {
+    public func min<U>(attributeClosure: (T.Type) -> Attribute<U>) -> U {
         return self.aggregateWithFunctionName("min", attributeClosure: attributeClosure)
     }
 
-    public func max<U>(attributeClosure: (T.Type) -> Attribute<U>) -> U! {
+    public func max<U>(attributeClosure: (T.Type) -> Attribute<U>) -> U {
         return self.aggregateWithFunctionName("max", attributeClosure: attributeClosure)
     }
 
-    public func average<U>(attributeClosure: (T.Type) -> Attribute<U>) -> U! {
+    public func average<U>(attributeClosure: (T.Type) -> Attribute<U>) -> U {
         return self.aggregateWithFunctionName("average", attributeClosure: attributeClosure)
     }
 
-    private func aggregateWithFunctionName<U>(functionName: String, attributeClosure: (T.Type) -> Attribute<U>) -> U! {
+    private func aggregateWithFunctionName<U>(functionName: String, attributeClosure: (T.Type) -> Attribute<U>) -> U {
         let attribute = attributeClosure(T.self)
         let attributeDescription = self.entityDescription.attributesByName[attribute.___name] as! NSAttributeDescription
         
@@ -259,8 +259,15 @@ extension Table {
         
         var error: NSError? = nil
         let results = self.context.executeFetchRequest(fetchRequest, error: &error)
-
-        return (results?.first as? NSDictionary)?.valueForKey(expressionDescription.name) as? U
+        
+        let value: AnyObject = (results!.first as! NSDictionary).valueForKey(expressionDescription.name)!
+        if let safeValue = value as? U {
+            return safeValue
+        }
+        else {
+            // HAX: try brute force
+            return unsafeBitCast(value, U.self)
+        }
     }
 
 }
@@ -271,7 +278,7 @@ extension Table {
 
 extension Table {
     
-    public func fetchAsync(completionClosure: ([T]?, NSError?) -> Void) -> NSProgress {
+    public func fetchAsync(completionClosure: ([T]!, NSError?) -> Void) -> NSProgress {
         return self.context.executeAsynchronousFetchRequestWithFetchRequest(self.toFetchRequest()) { objects, error in
             dispatch_async(dispatch_get_main_queue()) {
                 completionClosure(objects as? [T], error)
@@ -299,11 +306,6 @@ extension Table {
         }
     }
 
-//    public func batchUpdate(propertiesToUpdateClosure: (T.Type) -> [NSString : AnyObject], completionClosure: (Int, NSError?) -> Void) {
-//        let propertiesToUpdate = propertiesToUpdateClosure(T.self)
-//        self.batchUpdate(propertiesToUpdate, completionClosure: completionClosure)
-//    }
-
     public func batchUpdate<U>(attributeToUpdateClosure: (T.Type) -> (Attribute<U>, U), completionClosure: (Int, NSError?) -> Void) {
         let attributeAndValue = attributeToUpdateClosure(T.self)
         var propertiesToUpdate = [NSString : AnyObject]()
@@ -320,18 +322,9 @@ extension Table {
 extension Table {
 
     public func select(propertiesToFetch: [String]) -> AttributeQuery {
-        let attributeQuery = AttributeQuery(context: self.context, entityName: self.entityName, propertiesToFetch: propertiesToFetch)
+        let attributeQuery = AttributeQuery(previousQuery: self, propertiesToFetch: propertiesToFetch)
         return attributeQuery
     }
-
-//    public func select(propertiesToFetch: String...) -> AttributeQuery {
-//        return self.select(propertiesToFetch)
-//    }
-
-//    public func select(propertiesToFetchClosure: (T.Type) -> [String]) -> AttributeQuery {
-//        let propertiesToFetch = propertiesToFetchClosure(T.self)
-//        return self.select(propertiesToFetch)
-//    }
 
     public func select<U>(attributeToSelectClosure: (T.Type) -> Attribute<U>) -> AttributeQuery {
         return self.select([attributeToSelectClosure(T.self).___name])

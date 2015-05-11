@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8FE52608C06778A1FCBDFB45"
+               BlueprintIdentifier = "1C9F5D2221AD9C585353C379"
                BuildableName = "AlecrimCoreData.framework"
                BlueprintName = "Pods-AlecrimCoreData"
                ReferencedContainer = "container:Pods.xcodeproj">
