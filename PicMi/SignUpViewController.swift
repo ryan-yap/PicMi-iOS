@@ -33,7 +33,7 @@ class SignUpViewController: UIViewController {
     
     func OnSignupSuccess(notification: NSNotification){
         NSNotificationCenter.defaultCenter().postNotificationName("LoginSuccess", object: nil)
-        performSegueWithIdentifier("SignUpToMainPageSegue", sender: nil)
+        performSegueWithIdentifier("SignUpToLoaderSegue", sender: nil)
     }
     
     override func viewDidLoad() {

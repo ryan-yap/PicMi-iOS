@@ -11,6 +11,9 @@
 		DD1065171AD489B600F825F5 /* SummaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1065161AD489B600F825F5 /* SummaryViewController.swift */; };
 		DD1065191AD48D5700F825F5 /* Dispatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1065181AD48D5700F825F5 /* Dispatch.swift */; };
 		DD1B88E81AC2298A008F5FED /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1B88E71AC2298A008F5FED /* Location.swift */; };
+		DD2B25321B0130C9000F8B98 /* LoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2B25311B0130C9000F8B98 /* LoadingViewController.swift */; };
+		DD2B25341B0131BC000F8B98 /* GIF.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2B25331B0131BC000F8B98 /* GIF.swift */; };
+		DD2B25381B0132DA000F8B98 /* loader.gif in Resources */ = {isa = PBXBuildFile; fileRef = DD2B25371B0132DA000F8B98 /* loader.gif */; };
 		DD2CF1191AE17D1700E65BFF /* EnlargedPictureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2CF1181AE17D1700E65BFF /* EnlargedPictureViewController.swift */; };
 		DD3187A81ABB38340094E87F /* capture.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = DD3187A71ABB38340094E87F /* capture.mp3 */; };
 		DD32BFED1AD87FD000306073 /* Picture.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD32BFEC1AD87FD000306073 /* Picture.swift */; };
@@ -66,6 +69,9 @@
 		DD1065181AD48D5700F825F5 /* Dispatch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dispatch.swift; sourceTree = "<group>"; };
 		DD1B88E01AC2149E008F5FED /* PicMi-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PicMi-Bridging-Header.h"; sourceTree = "<group>"; };
 		DD1B88E71AC2298A008F5FED /* Location.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
+		DD2B25311B0130C9000F8B98 /* LoadingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingViewController.swift; sourceTree = "<group>"; };
+		DD2B25331B0131BC000F8B98 /* GIF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GIF.swift; sourceTree = "<group>"; };
+		DD2B25371B0132DA000F8B98 /* loader.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = loader.gif; sourceTree = "<group>"; };
 		DD2CF1181AE17D1700E65BFF /* EnlargedPictureViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnlargedPictureViewController.swift; sourceTree = "<group>"; };
 		DD3187A71ABB38340094E87F /* capture.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = capture.mp3; sourceTree = "<group>"; };
 		DD32BFEC1AD87FD000306073 /* Picture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Picture.swift; sourceTree = "<group>"; };
@@ -314,6 +320,9 @@
 				DDCB7D3F1ADC453E009A359B /* SignUpViewController.swift */,
 				DD1B88E01AC2149E008F5FED /* PicMi-Bridging-Header.h */,
 				DD63C42C1AFBFFBD0042E778 /* MapViewController.swift */,
+				DD2B25371B0132DA000F8B98 /* loader.gif */,
+				DD2B25311B0130C9000F8B98 /* LoadingViewController.swift */,
+				DD2B25331B0131BC000F8B98 /* GIF.swift */,
 			);
 			path = PicMi;
 			sourceTree = "<group>";
@@ -438,6 +447,7 @@
 				DDEB356E1ABA2EAC008CCE9C /* Main.storyboard in Resources */,
 				DD3187A81ABB38340094E87F /* capture.mp3 in Resources */,
 				DDEB35731ABA2EAC008CCE9C /* LaunchScreen.xib in Resources */,
+				DD2B25381B0132DA000F8B98 /* loader.gif in Resources */,
 				DDCB7D3E1ADC44EE009A359B /* bankgthd.ttf in Resources */,
 				DDEB35701ABA2EAC008CCE9C /* Images.xcassets in Resources */,
 			);
@@ -519,12 +529,14 @@
 				DD51DBA71AE58A44008EBB72 /* Video.swift in Sources */,
 				DD1B88E81AC2298A008F5FED /* Location.swift in Sources */,
 				DD63C42D1AFBFFBD0042E778 /* MapViewController.swift in Sources */,
+				DD2B25321B0130C9000F8B98 /* LoadingViewController.swift in Sources */,
 				DDEB358A1ABA3239008CCE9C /* LaunchScreenViewController.swift in Sources */,
 				DD9EC7AF1AE98B280093C12B /* SubmissionReviewViewController.swift in Sources */,
 				DDEB35661ABA2EAC008CCE9C /* AppDelegate.swift in Sources */,
 				DD9EC7B21AE9B8030093C12B /* MediaReviewViewController.swift in Sources */,
 				DD9F8ECF1ADDCDCB001B90D1 /* JobsListItemViewController.swift in Sources */,
 				DD8EA2C81AC1F520006902C8 /* User.swift in Sources */,
+				DD2B25341B0131BC000F8B98 /* GIF.swift in Sources */,
 				DD9EC7AA1AE988420093C12B /* Submissions.swift in Sources */,
 				DD2CF1191AE17D1700E65BFF /* EnlargedPictureViewController.swift in Sources */,
 				DD8EA2CC1AC1F790006902C8 /* Server.swift in Sources */,
@@ -660,13 +672,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = PicMi/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "d2430b63-d5aa-4227-ac9c-aadf51b97c94";
+				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "PicMi/PicMi-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -678,13 +690,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = PicMi/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "d2430b63-d5aa-4227-ac9c-aadf51b97c94";
+				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "PicMi/PicMi-Bridging-Header.h";
 			};
 			name = Release;

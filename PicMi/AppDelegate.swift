@@ -21,7 +21,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     var window: UIWindow?
     var timer : NSTimer = NSTimer()
     
-    
     //=====================Notification Handling=========================================
     
     func SetDispatchID(notification: NSNotification){
@@ -490,7 +489,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             location.latitude = containsPlacemark.location.coordinate.latitude
             location.name = containsPlacemark.name
             if (isLocationReady == false){
-                NSNotificationCenter.defaultCenter().postNotificationName("updatelocation", object: nil)
+                NSNotificationCenter.defaultCenter().postNotificationName("GPSActivated", object: nil)
                 isLocationReady = true
             }
         }
@@ -521,7 +520,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                     app_user.login(email, password: password)
                     self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
                     var storyboard : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
-                    var viewController : UIViewController = storyboard.instantiateViewControllerWithIdentifier("MainPage") as! MainPageViewController
+                    var viewController : UIViewController = storyboard.instantiateViewControllerWithIdentifier("Loader") as! LoadingViewController
                     self.window?.rootViewController = viewController
                     self.window?.makeKeyAndVisible()
                     return true;

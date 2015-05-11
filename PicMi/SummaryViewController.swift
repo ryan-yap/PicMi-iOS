@@ -218,7 +218,7 @@ class SummaryViewController: UIViewController,UICollectionViewDataSource, UIColl
     
     @IBAction func post_to_network() {
         dispatch.message = self.request_message.text
-        dispatch.request_picmi(pin_longitude: location.pin_longitude, pin_latitude: location.pin_latitude, range: 2000, filter: "")
+        dispatch.request_picmi(pin_longitude: location.pin_longitude, pin_latitude: location.pin_latitude, range: 20000, filter: "")
     }
 
     @IBAction func cancel() {

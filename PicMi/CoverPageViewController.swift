@@ -377,17 +377,11 @@ class CoverPageViewController: UIViewController{
     
     //=======================Notification Handling=============================================
     func OnLoginSuccess(notification: NSNotification){
-        UIView.animateWithDuration(0.01, delay: 0.1, options: UIViewAnimationOptions.Autoreverse, animations: {
-            self.capturesound.play();
-            self.flashview.alpha = 1;
-            }, completion: { finished in
-                self.flashview.alpha = 0;
-                NSNotificationCenter.defaultCenter().postNotificationName("starttimedstask", object: nil)
-                self.addHandlers();
-                ping_socket.connect();
-                dispatch_socket.connect();
-                self.performSegueWithIdentifier("toMainSegue", sender: nil)
-        })
+        NSNotificationCenter.defaultCenter().postNotificationName("starttimedstask", object: nil)
+        self.addHandlers();
+        ping_socket.connect();
+        dispatch_socket.connect();
+        self.performSegueWithIdentifier("toLoaderSegue", sender: nil)
     }
     
     func OnLoginFailure(notification: NSNotification){

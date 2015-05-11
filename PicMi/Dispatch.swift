@@ -81,7 +81,7 @@ class Dispatch{
         println(temp_request.requests_pics_urls)
         var pin_longitude = ((temp_request.request_dict["longitude"]!) as NSString).doubleValue
         var pin_latitude = ((temp_request.request_dict["latitude"]!) as NSString).doubleValue
-        var range = 2000
+        var range = 20000
         var filter = temp_request.request_dict["filter"]!
         
         Alamofire.request(.GET, server_cfg.server_url+"/locations/neighbor", parameters: ["longitude":pin_longitude , "latitude": pin_latitude, "range": range, "exception" : filter])

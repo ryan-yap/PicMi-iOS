@@ -34,11 +34,13 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
     var objecttype : String = "person"
     var places : NSMutableArray = NSMutableArray()
     var route_index: Int = 0
-    
-    
-    
+    var isEdittingLocation : Bool = false
+    var EditmessageOriginalYCoordinate : CGFloat = CGFloat()
+    var UploadImagesOriginalYCoordinate : CGFloat = CGFloat()
+    var isDoneSelectingMedia : Bool = false
     //===========================IBOUTLETs===========================
     
+    @IBOutlet var darktransparentbackground: UIView!
     @IBOutlet var EditMessageView: UIView!
     @IBOutlet var uploadimageview: UIView!
     @IBOutlet var LocationsTable: UITableView!
@@ -76,8 +78,18 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
     
     @IBOutlet var EditButton: UIButton!
     @IBOutlet var imagecollection: UICollectionView!
+    
+    @IBOutlet var SearchBarTextField: UITextField!
+    
     var videoData : NSData = NSData()
     //=========================== IBACTIONs ============================================
+    
+    @IBAction func IM_driver(){
+        let vc = self.storyboard!.instantiateViewControllerWithIdentifier("MessagingController") as! MessagingViewController
+        vc.type = "request"
+        vc.IndexPath = NSIndexPath(forRow: (requests_list.count - 1), inSection: 0)
+        self.presentViewController(vc, animated: true, completion: nil)
+    }
     
     @IBAction func hideKeyboard(){
         self.location_name.resignFirstResponder()
@@ -130,24 +142,20 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
         }
         self.location_name.resignFirstResponder()
         self.LocationTableView.hidden = false
+        self.isEdittingLocation = true
     }
     
-    @IBAction func BackUp(){
-        for x in jobs_list{
-            let job = (x as! Jobs)
-            for y in job.requests_pics_urls{
-                let url = (y as! Url)
-                println(url.urlpath)
-            }
-        }
-    }
-    
+
     @IBAction func optionButton(){
         if(self.optionsidebarstatus == "off"){
-            self.optionbuttonView.hidden = false;
+            UIView.animateWithDuration(0.5, animations: {
+                self.optionbuttonView.center.y = 88 + self.optionbuttonView.frame.height/2
+            })
             self.optionsidebarstatus = "on"
         }else{
-            self.optionbuttonView.hidden = true;
+            UIView.animateWithDuration(0.5, animations: {
+                self.optionbuttonView.center.y = 88 + self.optionbuttonView.frame.height/2 - 400
+            })
             self.optionsidebarstatus = "off"
         }
     }
@@ -157,16 +165,23 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
     }
     
     @IBAction func set_pickup_location(){
+        
+        
         self.picmiimageview.hidden=true;
         self.confirmationimageview.hidden=false;
         self.setpicturelocationbutton.hidden=true;
         self.choose_objects_view.hidden=true;
+        self.darktransparentbackground.hidden = false
         self.show_message_window()
     }
     
     
     func show_message_window(){
         self.EditMessageView.hidden = false
+        UIView.animateWithDuration(0.7, animations: {
+            self.EditMessageView.center.y = 88 + self.EditMessageView.frame.height/2
+        })
+        
     }
     
     @IBAction func selectperson(){
@@ -312,7 +327,10 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
         picture.reset();
         self.map.scrollEnabled = true
         self.picmiimageview.hidden = false;
-        self.optionbuttonView.hidden = true;
+        UIView.animateWithDuration(0.5, animations: {
+            self.optionbuttonView.center.y = 88 + self.optionbuttonView.frame.height/2 - 400
+        })
+        self.optionsidebarstatus = "off"
         self.WaitingView.hidden = true
         self.confirmationimageview.hidden = true
         self.camera_en_route.hidden = true
@@ -438,7 +456,9 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
     
     func OnTransactionEnded(notification: NSNotification){
         var data = notification.userInfo as Dictionary!
-        self.optionbuttonView.hidden = true;
+        UIView.animateWithDuration(0.5, animations: {
+            self.optionbuttonView.center.y = 88 + self.optionbuttonView.frame.height/2 - 400
+        })
         self.optionsidebarstatus = "off"
         if(jobs_list.count == 0){
             self.notification_icon.hidden = true
@@ -534,9 +554,21 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
         self.imagecollection.reloadData()
         self.EditMessageView.hidden = true
         self.uploadimageview.hidden = false
+        UIView.animateWithDuration(0.7, animations: {
+            self.EditMessageView.center.y = -400
+            self.uploadimageview.center.y = 88 + self.uploadimageview.frame.height/2
+        })
     }
     
     //======================= Opening camera to capture photo ==============================================
+    
+    @IBAction func cancelLocationSearching(){
+        //self.location_name.resignFirstResponder()
+        self.SearchBarTextField.resignFirstResponder()
+        self.LocationTableView.hidden = true
+        self.isEdittingLocation = false
+        self.places.removeAllObjects()
+    }
     
     @IBAction func go_to_photo(){
         println("Go To Photo")
@@ -544,7 +576,6 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
             self.picker.sourceType = UIImagePickerControllerSourceType.Camera
             var mediaTypes: Array<AnyObject> = [kUTTypeImage]
             self.picker.mediaTypes = mediaTypes
-            dismissViewControllerAnimated(true, completion: nil)
             self.presentViewController(picker, animated: true, completion: nil)
         }
         else{
@@ -558,7 +589,6 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
             self.picker.sourceType = UIImagePickerControllerSourceType.Camera
             var mediaTypes: Array<AnyObject> = [kUTTypeMovie]
             self.picker.mediaTypes = mediaTypes
-            dismissViewControllerAnimated(true, completion: nil)
             self.presentViewController(picker, animated: true, completion: nil)
         }
         else{
@@ -570,6 +600,10 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
     
     @IBAction func upload_picture(){
         self.uploadimageview.hidden = true
+        UIView.animateWithDuration(0.2, animations: {
+
+            self.uploadimageview.center.y = -400
+        })
         self.show_summary();
     }
     
@@ -577,7 +611,6 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
         self.picker.allowsEditing = false;
         self.picker.sourceType = .PhotoLibrary
         println("Go To Gallery")
-        dismissViewControllerAnimated(true, completion: nil)
         presentViewController(self.picker, animated: true, completion: nil)//4
     }
     
@@ -590,7 +623,10 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
         picture.reset();
         self.map.scrollEnabled = true
         self.picmiimageview.hidden = false;
-        self.optionbuttonView.hidden = true;
+        UIView.animateWithDuration(0.5, animations: {
+            self.optionbuttonView.center.y = 88 + self.optionbuttonView.frame.height/2 - 400
+        })
+        self.optionsidebarstatus = "off"
         self.WaitingView.hidden = true
         self.confirmationimageview.hidden = true
         self.camera_en_route.hidden = true
@@ -618,9 +654,18 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
     
     // ======================= Delegates' Methods ==============================================
     override func viewDidAppear(animated: Bool) {
+  
         self.stoploadingview();
-        self.optionbuttonView.hidden = true;
-        self.optionsidebarstatus = "off"
+        UIView.animateWithDuration(0.5, animations: {
+            self.optionbuttonView.center.y = 88 + self.optionbuttonView.frame.height/2 - 400
+        })
+        
+        if (isDoneSelectingMedia == false){
+            self.darktransparentbackground.hidden = true
+            self.uploadimageview.center.y = -400
+            self.EditMessageView.center.y = -400
+        }
+        
         if(jobs_list.count == 0){
             self.notification_icon.hidden = true
             self.notification_num.hidden = true
@@ -634,6 +679,8 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
             self.job_num.hidden = false;
             self.job_num.text = String(jobs_list.count)
         }
+        
+        self.isDoneSelectingMedia = false
     }
     
     override func viewDidLoad() {
@@ -658,6 +705,8 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
         self.LocationTableView.hidden = true
         self.EditMessageView.hidden = true
         self.uploadimageview.hidden = true
+        self.EditmessageOriginalYCoordinate = self.EditMessageView.center.y
+        self.UploadImagesOriginalYCoordinate = self.uploadimageview.center.y
         self.imagecollection.backgroundColor = UIColor.clearColor()
         let defaults = NSUserDefaults.standardUserDefaults()
         if let jobs: NSArray = defaults.arrayForKey("jobs_list"){
@@ -673,8 +722,10 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
                 requests_list.addObject(x)
             }
         }
+        self.darktransparentbackground.hidden = true
         self.EditButton.setTitle("Delete Mode", forState: .Normal)
-        self.optionbuttonView.hidden = true;
+        self.optionbuttonView.center.y = 88 + self.optionbuttonView.frame.height/2 - 400
+        self.optionsidebarstatus = "off";
         self.WaitingView.hidden = true
         self.confirmationimageview.hidden = true
         self.camera_en_route.hidden = true
@@ -688,17 +739,31 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
         self.picker.delegate = self
         self.selectperson();
         self.stoploadingview();
+        assert((isLocationReady == true), "Location should be ready")
         let pin = CLLocationCoordinate2D(
-            //latitude: location.latitude,
-            //longitude: location.longitude
-            latitude: 49.2868822,
-            longitude: -123.1182794
+            latitude: location.latitude,
+            longitude: location.longitude
+            //latitude: 49.2868822,
+            //longitude: -123.1182794
         )
         println("\(pin.latitude) \(pin.longitude)" )
         let span = MKCoordinateSpanMake(0.0025, 0.0025)
         let region = MKCoordinateRegion(center: pin, span: span)
         self.map.setRegion(region, animated: true)
         // Do any additional setup after loading the view.
+        
+        var upSwipe = UISwipeGestureRecognizer(target: self, action: Selector("UpSwipe:"))
+        upSwipe.direction = .Up
+        self.optionbuttonView.addGestureRecognizer(upSwipe)
+    }
+    
+    func UpSwipe(sender:UISwipeGestureRecognizer) {
+        if (sender.direction == .Up) {
+            UIView.animateWithDuration(0.5, animations: {
+                self.optionbuttonView.center.y = self.optionbuttonView.center.y - 400
+            })
+            self.optionsidebarstatus = "off"
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -728,13 +793,16 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
     func mapView(mapView: MKMapView!, regionWillChangeAnimated animated: Bool) {
         self.location_name.resignFirstResponder()
         self.LocationTableView.hidden = true
-        self.optionbuttonView.hidden = true;
+        UIView.animateWithDuration(0.5, animations: {
+            self.optionbuttonView.center.y = 88 + self.optionbuttonView.frame.height/2 - 400
+        })
         self.optionsidebarstatus = "off"
     }
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
         var mediaType : String = info[UIImagePickerControllerMediaType] as! String
         println(mediaType)
+        self.isDoneSelectingMedia = true
         if (mediaType == "public.movie"){
             let tempImage = info[UIImagePickerControllerMediaURL] as! NSURL!
             println(tempImage.path!)
@@ -777,15 +845,27 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
             if (error == nil){
                 let placemark = (response.mapItems[0] as! MKMapItem).placemark
                 
-                for x in response.mapItems{
-                    var place = (x as! MKMapItem)
-                    self.places.addObject(place)
+                if (response.mapItems.count == 0){
+                    self.places.removeAllObjects()
+                }else{
+                    for x in response.mapItems{
+                        var place = (x as! MKMapItem)
+                        self.places.addObject(place)
+                    }
                 }
+                self.LocationsTable.reloadData()
+            }else{
+                self.places.removeAllObjects()
                 self.LocationsTable.reloadData()
             }
         }
+        
         self.location_name.resignFirstResponder()
         self.LocationTableView.hidden = false
+        
+        if(textField == self.location_name){
+            self.isEdittingLocation = true
+        }
         return true
     }
     
