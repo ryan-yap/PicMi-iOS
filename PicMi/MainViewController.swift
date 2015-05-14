@@ -79,6 +79,7 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
     @IBOutlet var EditButton: UIButton!
     @IBOutlet var imagecollection: UICollectionView!
     
+    @IBOutlet var editlabel: UILabel!
     @IBOutlet var SearchBarTextField: UITextField!
     
     var videoData : NSData = NSData()
@@ -101,13 +102,7 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
     
     @IBAction func switch_job(){
         self.map.removeOverlays(self.map.overlays)
-        if(self.route_index == self.map.annotations.count){
-            self.route_index = 0
-        }
-        
-        if (self.map.annotations.count != 0){
-            var annotation =  self.map.annotations[self.route_index] as! MKAnnotation
-            var centre_location = CLLocation(latitude: annotation.coordinate.latitude, longitude: annotation.coordinate.longitude)
+            var centre_location = CLLocation(latitude: location.pin_latitude, longitude: location.pin_longitude)
             CLGeocoder().reverseGeocodeLocation(centre_location, completionHandler: {(placemarks, error)->Void in
                 if (error != nil) {
                     println("Reverse geocoder failed with error" + error.localizedDescription)
@@ -121,8 +116,6 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
                     println("Problem with the data received from geocoder")
                 }
             })
-            self.route_index = route_index + 1
-        }
     }
     
     func search_location(){
@@ -149,12 +142,12 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
     @IBAction func optionButton(){
         if(self.optionsidebarstatus == "off"){
             UIView.animateWithDuration(0.5, animations: {
-                self.optionbuttonView.center.y = 88 + self.optionbuttonView.frame.height/2
+                self.optionbuttonView.center.y = 62 + self.optionbuttonView.frame.height/2
             })
             self.optionsidebarstatus = "on"
         }else{
             UIView.animateWithDuration(0.5, animations: {
-                self.optionbuttonView.center.y = 88 + self.optionbuttonView.frame.height/2 - 400
+                self.optionbuttonView.center.y = 62 + self.optionbuttonView.frame.height/2 - 400
             })
             self.optionsidebarstatus = "off"
         }
@@ -165,8 +158,6 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
     }
     
     @IBAction func set_pickup_location(){
-        
-        
         self.picmiimageview.hidden=true;
         self.confirmationimageview.hidden=false;
         self.setpicturelocationbutton.hidden=true;
@@ -177,9 +168,11 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
     
     
     func show_message_window(){
+        self.WaitingView.hidden = false
         self.EditMessageView.hidden = false
+        self.addmessagetextfield.becomeFirstResponder()
         UIView.animateWithDuration(0.7, animations: {
-            self.EditMessageView.center.y = 88 + self.EditMessageView.frame.height/2
+            self.EditMessageView.center.y = 62 + self.EditMessageView.frame.height/2
         })
         
     }
@@ -328,7 +321,7 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
         self.map.scrollEnabled = true
         self.picmiimageview.hidden = false;
         UIView.animateWithDuration(0.5, animations: {
-            self.optionbuttonView.center.y = 88 + self.optionbuttonView.frame.height/2 - 400
+            self.optionbuttonView.center.y = 62 + self.optionbuttonView.frame.height/2 - 400
         })
         self.optionsidebarstatus = "off"
         self.WaitingView.hidden = true
@@ -457,7 +450,7 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
     func OnTransactionEnded(notification: NSNotification){
         var data = notification.userInfo as Dictionary!
         UIView.animateWithDuration(0.5, animations: {
-            self.optionbuttonView.center.y = 88 + self.optionbuttonView.frame.height/2 - 400
+            self.optionbuttonView.center.y = 62 + self.optionbuttonView.frame.height/2 - 400
         })
         self.optionsidebarstatus = "off"
         if(jobs_list.count == 0){
@@ -529,10 +522,10 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
     //======================= Add Message for Driver ==============================================
     
     @IBAction func edit_images(){
-        if(self.EditButton.titleLabel?.text == "Delete Mode"){
-            self.EditButton.setTitle("Back", forState: .Normal)
+        if(self.editlabel.text == "Delete Mode"){
+            self.editlabel.text = "Back"
         }else{
-            self.EditButton.setTitle("Delete Mode", forState: .Normal)
+            self.editlabel.text = "Delete Mode"
         }
     }
     
@@ -556,7 +549,7 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
         self.uploadimageview.hidden = false
         UIView.animateWithDuration(0.7, animations: {
             self.EditMessageView.center.y = -400
-            self.uploadimageview.center.y = 88 + self.uploadimageview.frame.height/2
+            self.uploadimageview.center.y = 62 + self.uploadimageview.frame.height/2
         })
     }
     
@@ -621,10 +614,13 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
     @IBAction func new_request(){
         dispatch.reset();
         picture.reset();
+        self.SearchBarTextField.resignFirstResponder()
+        self.addmessagetextfield.resignFirstResponder()
+        self.location_name.resignFirstResponder()
         self.map.scrollEnabled = true
         self.picmiimageview.hidden = false;
         UIView.animateWithDuration(0.5, animations: {
-            self.optionbuttonView.center.y = 88 + self.optionbuttonView.frame.height/2 - 400
+            self.optionbuttonView.center.y = 62 + self.optionbuttonView.frame.height/2 - 400
         })
         self.optionsidebarstatus = "off"
         self.WaitingView.hidden = true
@@ -640,11 +636,10 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
         self.picker.delegate = self
         self.EditMessageView.hidden = true
         self.uploadimageview.hidden = true
+        self.darktransparentbackground.hidden = true
         let pin = CLLocationCoordinate2D(
-            //latitude: location.latitude,
-            //longitude: location.longitude
-            latitude: 49.2868822,
-            longitude: -123.1182794
+            latitude: location.latitude,
+            longitude: location.longitude
         )
         println("\(pin.latitude) \(pin.longitude)" )
         let span = MKCoordinateSpanMake(0.0025, 0.0025)
@@ -657,7 +652,7 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
   
         self.stoploadingview();
         UIView.animateWithDuration(0.5, animations: {
-            self.optionbuttonView.center.y = 88 + self.optionbuttonView.frame.height/2 - 400
+            self.optionbuttonView.center.y = 62 + self.optionbuttonView.frame.height/2 - 400
         })
         
         if (isDoneSelectingMedia == false){
@@ -723,8 +718,8 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
             }
         }
         self.darktransparentbackground.hidden = true
-        self.EditButton.setTitle("Delete Mode", forState: .Normal)
-        self.optionbuttonView.center.y = 88 + self.optionbuttonView.frame.height/2 - 400
+        self.editlabel.text = "Delete Mode"
+        self.optionbuttonView.center.y = 62 + self.optionbuttonView.frame.height/2 - 400
         self.optionsidebarstatus = "off";
         self.WaitingView.hidden = true
         self.confirmationimageview.hidden = true
@@ -755,6 +750,7 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
         var upSwipe = UISwipeGestureRecognizer(target: self, action: Selector("UpSwipe:"))
         upSwipe.direction = .Up
         self.optionbuttonView.addGestureRecognizer(upSwipe)
+        self.SearchBarTextField.addTarget(self, action: Selector("textFieldDidChange:"), forControlEvents: UIControlEvents.EditingChanged)
     }
     
     func UpSwipe(sender:UISwipeGestureRecognizer) {
@@ -794,7 +790,7 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
         self.location_name.resignFirstResponder()
         self.LocationTableView.hidden = true
         UIView.animateWithDuration(0.5, animations: {
-            self.optionbuttonView.center.y = 88 + self.optionbuttonView.frame.height/2 - 400
+            self.optionbuttonView.center.y = 62 + self.optionbuttonView.frame.height/2 - 400
         })
         self.optionsidebarstatus = "off"
     }
@@ -869,8 +865,57 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
         return true
     }
     
+    func textFieldDidChange(sender:UITextField) {
+        var search_request = MKLocalSearchRequest()
+        search_request.naturalLanguageQuery = sender.text
+        
+        let pin = CLLocationCoordinate2D(
+            latitude: location.pin_latitude,
+            longitude: location.pin_longitude
+        )
+        
+        let span = MKCoordinateSpanMake(0.0025, 0.0025)
+        let region = MKCoordinateRegion(center: pin, span: span)
+        search_request.region = region
+        
+        self.places.removeAllObjects()
+        self.LocationsTable.reloadData()
+        
+        let search = MKLocalSearch(request: search_request)
+        search.startWithCompletionHandler { (response, error) in
+            if (error == nil){
+                let placemark = (response.mapItems[0] as! MKMapItem).placemark
+                
+                if (response.mapItems.count == 0){
+                    self.places.removeAllObjects()
+                }else{
+                    for x in response.mapItems{
+                        var place = (x as! MKMapItem)
+                        self.places.addObject(place)
+                    }
+                }
+                self.LocationsTable.reloadData()
+            }else{
+                self.places.removeAllObjects()
+                self.LocationsTable.reloadData()
+            }
+        }
+        
+        if(sender == self.location_name){
+            self.isEdittingLocation = true
+        }
+    }
+    
+    func textFieldShouldBeginEditing(textField: UITextField) -> Bool {
+        self.LocationTableView.hidden = false
+        textField.resignFirstResponder()
+        self.SearchBarTextField.becomeFirstResponder()
+        return false
+    }
+    
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         self.LocationTableView.hidden = true
+        self.SearchBarTextField.resignFirstResponder()
         println("Selected")
         if let place = self.places[indexPath.row] as? MKMapItem {
             if let containsPlacemark = place.placemark {
@@ -935,7 +980,7 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
     func mapView(mapView: MKMapView!, rendererForOverlay overlay: MKOverlay!) -> MKOverlayRenderer! {
         if (overlay.isKindOfClass(MKPolyline)){
             var renderer = MKPolylineRenderer(overlay: overlay)
-            renderer.strokeColor = UIColor.blueColor()
+            renderer.strokeColor = UIColor(red: 0, green: 0.4901196, blue: 0.631372549, alpha: 1)
             renderer.lineWidth = 5.0
             return renderer
         }
@@ -1001,7 +1046,7 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         
-        if(self.EditButton.titleLabel?.text == "Back"){
+        if(self.editlabel.text == "Back"){
             dispatch.requests_media_list.removeObjectAtIndex(indexPath.row)
             var indexPaths : NSMutableArray = NSMutableArray()
             indexPaths.addObject(indexPath)
@@ -1015,6 +1060,10 @@ class MainPageViewController: UIViewController,CLLocationManagerDelegate, MKMapV
         return dispatch.requests_media_list.count
         //}
         //   return 0
+    }
+    
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        self.SearchBarTextField.resignFirstResponder()
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {

@@ -53,7 +53,7 @@ class Dispatch{
             .responseJSON { (request, response, data, error) in
                 if (data == nil){
                     println("failed 1")
-                    NSNotificationCenter.defaultCenter().postNotificationName("RequestPicMiDriverFailure", object: nil)
+                NSNotificationCenter.defaultCenter().postNotificationName("RequestPicMiDriverFailure", object: nil)
                 }else{
                     let json = JSON(data!)
                     let data = json["data"]

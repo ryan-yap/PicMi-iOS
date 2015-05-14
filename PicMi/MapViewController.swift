@@ -46,6 +46,73 @@ class MapViewController: UIViewController,MKMapViewDelegate {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     
+    func start_routing(){
+        var centre_location = CLLocation(latitude: self.latitude, longitude: self.longitude)
+        CLGeocoder().reverseGeocodeLocation(centre_location, completionHandler: {(placemarks, error)->Void in
+            if (error != nil) {
+                println("Reverse geocoder failed with error" + error.localizedDescription)
+                return
+            }
+                
+            if placemarks.count > 0 {
+                let destination_pm = placemarks[0] as! CLPlacemark
+                self.get_source_pm(destination_pm)
+            } else {
+                println("Problem with the data received from geocoder")
+            }
+        })
+    }
+    
+    func get_source_pm(destination_pm: CLPlacemark?){
+        var centre_location = CLLocation(latitude: location.latitude, longitude: location.longitude)
+        CLGeocoder().reverseGeocodeLocation(centre_location, completionHandler: {(placemarks, error)->Void in
+            if (error != nil) {
+                println("Reverse geocoder failed with error" + error.localizedDescription)
+                return
+            }
+            
+            if placemarks.count > 0 {
+                let source_pm = placemarks[0] as! CLPlacemark
+                self.route_user(destination: destination_pm, source: source_pm)
+            } else {
+                println("Problem with the data received from geocoder")
+            }
+        })
+    }
+    
+    func mapView(mapView: MKMapView!, rendererForOverlay overlay: MKOverlay!) -> MKOverlayRenderer! {
+        if (overlay.isKindOfClass(MKPolyline)){
+            var renderer = MKPolylineRenderer(overlay: overlay)
+            renderer.strokeColor = UIColor(red: 0, green: 0.4901196, blue: 0.631372549, alpha: 1)
+            renderer.lineWidth = 5.0
+            return renderer
+        }
+        
+        return nil
+    }
+    
+    func route_user(#destination: CLPlacemark?, source :CLPlacemark?){
+        var direction_request = MKDirectionsRequest()
+        var source_pm = MKPlacemark(coordinate: source!.location.coordinate, addressDictionary: source?.addressDictionary)
+        var destination_pm = MKPlacemark(coordinate: destination!.location.coordinate, addressDictionary: destination?.addressDictionary)
+        
+        direction_request.setSource(MKMapItem(placemark: source_pm))
+        direction_request.setDestination(MKMapItem(placemark: destination_pm))
+        direction_request.transportType = MKDirectionsTransportType.Automobile
+        var direction = MKDirections(request: direction_request)
+        direction.calculateDirectionsWithCompletionHandler ({
+            (response: MKDirectionsResponse?, error: NSError?) in
+            if (error != nil){
+                return
+            }else{
+                for x in response!.routes{
+                    let route = x as! MKRoute
+                    self.map.addOverlay(route.polyline, level: MKOverlayLevel.AboveRoads)
+                }
+            }
+        })
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -77,7 +144,7 @@ class MapViewController: UIViewController,MKMapViewDelegate {
         
         map.addAnnotation(annotation)
         // Do any additional setup after loading the view.
-        
+        self.start_routing()
         self.locationLabel.text = self.location_name
     
     }

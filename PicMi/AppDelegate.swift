@@ -20,6 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     let locationManager = CLLocationManager()
     var window: UIWindow?
     var timer : NSTimer = NSTimer()
+   
     
     //=====================Notification Handling=========================================
     
@@ -448,7 +449,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             ping_socket.connect()
         }
         locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         locationManager.stopUpdatingLocation()
         locationManager.requestWhenInUseAuthorization()
         locationManager.requestAlwaysAuthorization()

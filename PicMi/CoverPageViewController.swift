@@ -377,10 +377,6 @@ class CoverPageViewController: UIViewController{
     
     //=======================Notification Handling=============================================
     func OnLoginSuccess(notification: NSNotification){
-        NSNotificationCenter.defaultCenter().postNotificationName("starttimedstask", object: nil)
-        self.addHandlers();
-        ping_socket.connect();
-        dispatch_socket.connect();
         self.performSegueWithIdentifier("toLoaderSegue", sender: nil)
     }
     

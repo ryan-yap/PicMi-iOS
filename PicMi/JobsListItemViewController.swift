@@ -26,6 +26,10 @@ class JobsListItemImagesViewCell : UICollectionViewCell {
 
 class JobsListItemViewController: UIViewController,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout,UIImagePickerControllerDelegate, UINavigationControllerDelegate{
     
+    @IBOutlet var uploadimagecollectionview: UICollectionView!
+    
+    @IBOutlet var uploadimageview: UIView!
+    @IBOutlet var uploadimagewindow: UIView!
     @IBOutlet var request_message: UITextView!
     @IBOutlet var uploaded_images: UICollectionView!
     @IBOutlet var thingicon: UIImageView!
@@ -34,22 +38,23 @@ class JobsListItemViewController: UIViewController,UICollectionViewDataSource, U
     var IndexPath : NSIndexPath = NSIndexPath()
     let picker = UIImagePickerController()
     var JobID : String = ""
+    var isDoneSelectingMedia : Bool = false
     
-    func go_to_gallery(button:UIButton){
+    @IBAction func go_to_gallery(){
         self.picker.allowsEditing = false;
         self.picker.sourceType = .PhotoLibrary
         println("Go To Gallery")
-        dismissViewControllerAnimated(true, completion: nil)
+        //dismissViewControllerAnimated(true, completion: nil)
         presentViewController(self.picker, animated: true, completion: nil)//4
     }
-
-    func go_to_photo(button:UIButton){
+    
+    @IBAction func go_to_photo(){
         println("Go To Photo")
         if (UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera)){
             self.picker.sourceType = UIImagePickerControllerSourceType.Camera
             var mediaTypes: Array<AnyObject> = [kUTTypeImage]
             self.picker.mediaTypes = mediaTypes
-            dismissViewControllerAnimated(true, completion: nil)
+            //dismissViewControllerAnimated(true, completion: nil)
             self.presentViewController(picker, animated: true, completion: nil)
         }
         else{
@@ -57,13 +62,13 @@ class JobsListItemViewController: UIViewController,UICollectionViewDataSource, U
         }
     }
     
-    func go_to_video(button:UIButton){
+    @IBAction func go_to_video(){
         println("Go To Video")
         if (UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera)){
             self.picker.sourceType = UIImagePickerControllerSourceType.Camera
             var mediaTypes: Array<AnyObject> = [kUTTypeMovie]
             self.picker.mediaTypes = mediaTypes
-            dismissViewControllerAnimated(true, completion: nil)
+            //dismissViewControllerAnimated(true, completion: nil)
             self.presentViewController(picker, animated: true, completion: nil)
         }
         else{
@@ -71,49 +76,13 @@ class JobsListItemViewController: UIViewController,UICollectionViewDataSource, U
         }
     }
     
+    
     @IBAction func take_picture(){
-        var gallery = UIButton()
-        gallery.setTitle("Photos", forState: .Normal)
-        gallery.setImage(UIImage(named: "gallery.png"), forState: .Normal)
-        gallery.frame = CGRectMake(20, 80, 50, 50)
-        gallery.addTarget(self, action: "go_to_gallery:", forControlEvents: .TouchUpInside)
-        
-        var gallery_label = UILabel()
-        gallery_label.text = "Photos"
-        gallery_label.frame = CGRectMake(20, 35, 120, 50)
-        
-        var photo_label = UILabel()
-        photo_label.text = "Camera"
-        photo_label.frame = CGRectMake(110, 35, 120, 50)
-        
-        var photo = UIButton()
-        photo.setImage(UIImage(named: "photo.png"), forState: .Normal)
-        photo.frame = CGRectMake(115, 80, 50, 50)
-        photo.addTarget(self, action: "go_to_photo:", forControlEvents: .TouchUpInside)
-        
-        var video_label = UILabel()
-        video_label.text = "Video"
-        video_label.frame = CGRectMake(205, 35, 120, 50)
-        
-        var video = UIButton()
-        video.setImage(UIImage(named: "video.png"), forState: .Normal)
-        video.frame = CGRectMake(203, 80, 50, 50)
-        video.addTarget(self, action: "go_to_video:", forControlEvents: .TouchUpInside)
-        
-        let alertController = UIAlertController(title: "Upload Picture?" as String!, message: "\n\n\n\n\n",   preferredStyle: UIAlertControllerStyle.Alert)
-        alertController.addAction(UIAlertAction(title: "UPLOAD", style: UIAlertActionStyle.Default, handler: {(alert: UIAlertAction!) in
-            self.show_review();
-        }))
-        alertController.addAction(UIAlertAction(title: "NO", style: UIAlertActionStyle.Default, handler: {(alert: UIAlertAction!) in
-            self.show_review();
-        }))
-        alertController.view.addSubview(gallery)
-        alertController.view.addSubview(photo)
-        alertController.view.addSubview(video)
-        alertController.view.addSubview(gallery_label)
-        alertController.view.addSubview(photo_label)
-        alertController.view.addSubview(video_label)
-        self.presentViewController(alertController, animated: true, completion: nil)
+        self.uploadimageview.hidden = false
+        self.uploadimagewindow.hidden = false
+        UIView.animateWithDuration(0.7, animations: {
+            self.uploadimagewindow.center.y = 88 + self.uploadimagewindow.frame.height/2
+        })
     }
     
     func showguyicon(){
@@ -142,6 +111,16 @@ class JobsListItemViewController: UIViewController,UICollectionViewDataSource, U
             }
             dismissViewControllerAnimated(true, completion: nil)
         }
+        
+        println(self.isDoneSelectingMedia)
+        
+        if (self.isDoneSelectingMedia == false){
+            self.uploadimageview.hidden = true
+            self.uploadimagewindow.center.y = -400
+            println("isDoneSelecting Media")
+        }
+        
+        self.isDoneSelectingMedia = false
     }
     
     func OnPhotoRequest(notification: NSNotification){
@@ -243,7 +222,7 @@ class JobsListItemViewController: UIViewController,UICollectionViewDataSource, U
             }
         }
     }
-
+    
     func OnTransactionEnded(notification: NSNotification){
         var data = notification.userInfo as Dictionary!
         let alertController = UIAlertController(title: "Transaction Ended" as String!, message: nil,   preferredStyle: UIAlertControllerStyle.Alert)
@@ -252,6 +231,10 @@ class JobsListItemViewController: UIViewController,UICollectionViewDataSource, U
     }
     
     override func viewDidLoad() {
+        super.viewDidLoad()
+        self.uploadimagewindow.center.y = -400
+        self.uploadimagewindow.hidden = true
+        self.uploadimageview.hidden = true
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "OnPhotoRequest:", name: "PhotoRequest", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "OnPhotoResponse:", name: "PhotoResponse", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "OnRequestPicmiDriverFailure:", name: "RequestPicMiDriverFailure", object: nil)
@@ -264,7 +247,7 @@ class JobsListItemViewController: UIViewController,UICollectionViewDataSource, U
             }else{
                 self.request_message.text = ""
             }
-
+            
             switch (request.request_dict["objecttype"]!){
             case("place"):
                 self.showplaceicon()
@@ -276,7 +259,6 @@ class JobsListItemViewController: UIViewController,UICollectionViewDataSource, U
             self.JobID = request.request_dict["jobID"]! as String
         }
         self.picker.delegate = self
-        super.viewDidLoad()
         // Do any additional setup after loading the view.
     }
     
@@ -298,12 +280,21 @@ class JobsListItemViewController: UIViewController,UICollectionViewDataSource, U
         }
     }
     
+    @IBAction func cancel_upload(){
+        self.uploadimageview.hidden = true
+        self.uploadimagewindow.hidden = true
+        UIView.animateWithDuration(0.7, animations: {
+            self.uploadimagewindow.center.y = -400
+        })
+        dispatch.responses_media_list.removeAllObjects()
+    }
+    
     @IBAction func cancel() {
         dismissViewControllerAnimated(true, completion: nil)
     }
     
     @IBAction func showMap(){
-         if let request = jobs_list[IndexPath.row] as? Jobs {
+        if let request = jobs_list[IndexPath.row] as? Jobs {
             let vc = self.storyboard!.instantiateViewControllerWithIdentifier("MapViewController") as! MapViewController
             vc.longitude = CLLocationDegrees((request.request_dict["longitude"] as NSString!).doubleValue)
             vc.latitude = CLLocationDegrees((request.request_dict["latitude"] as NSString!).doubleValue)
@@ -315,39 +306,72 @@ class JobsListItemViewController: UIViewController,UICollectionViewDataSource, U
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         var count : Int = 0
-        if let request = jobs_list[self.IndexPath.row] as? Jobs {
-            count = request.requests_pics_urls.count
+        if (collectionView == self.uploaded_images){
+            if let request = jobs_list[self.IndexPath.row] as? Jobs {
+                count = request.requests_pics_urls.count
+            }
+        }else if(collectionView == self.uploadimagecollectionview){
+            count = dispatch.responses_media_list.count
         }
         return count
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("JobsListItemImageCell",forIndexPath: indexPath)as! JobsListItemImagesViewCell
-        var tempimage : Url = Url()
-        if let request = jobs_list[self.IndexPath.row] as? Jobs {
-            tempimage = request.requests_pics_urls[indexPath.row] as! Url
+        if (collectionView == self.uploaded_images){
+            let cell = collectionView.dequeueReusableCellWithReuseIdentifier("JobsListItemImageCell",forIndexPath: indexPath)as! JobsListItemImagesViewCell
+            var tempimage : Url = Url()
+            if let request = jobs_list[self.IndexPath.row] as? Jobs {
+                tempimage = request.requests_pics_urls[indexPath.row] as! Url
+            }
+            cell.loadItem(image: tempimage)
+            
+            return cell
+        }else if(collectionView == self.uploadimagecollectionview){
+            let cell = collectionView.dequeueReusableCellWithReuseIdentifier("UploadedImageCell",forIndexPath: indexPath)as! UploadedImagesViewCell
+            var (tempimage) = dispatch.responses_media_list[indexPath.row] as? Media
+            
+            cell.loadItem(image: tempimage!)
+            
+            return cell
         }
-        cell.loadItem(image: tempimage)
-        
-        return cell
+        return UICollectionViewCell()
     }
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        if let request = jobs_list[self.IndexPath.row] as? Jobs {
-            if((request.requests_pics_urls[indexPath.row] as? Url)!.type == "video"){
-                self.performSegueWithIdentifier("JobItemtoAVPlayerSegue", sender: collectionView.cellForItemAtIndexPath(indexPath))
-            }else if((request.requests_pics_urls[indexPath.row] as? Url)!.type == "image"){
-                self.performSegueWithIdentifier("JobItemtoEnlargedPictureSegue", sender: collectionView.cellForItemAtIndexPath(indexPath))
+        if(collectionView == self.uploaded_images){
+            if let request = jobs_list[self.IndexPath.row] as? Jobs {
+                if((request.requests_pics_urls[indexPath.row] as? Url)!.type == "video"){
+                    self.performSegueWithIdentifier("JobItemtoAVPlayerSegue", sender: collectionView.cellForItemAtIndexPath(indexPath))
+                }else if((request.requests_pics_urls[indexPath.row] as? Url)!.type == "image"){
+                    self.performSegueWithIdentifier("JobItemtoEnlargedPictureSegue", sender: collectionView.cellForItemAtIndexPath(indexPath))
+                }
             }
+        }else if(collectionView == self.uploadimagecollectionview){
+            
         }
     }
     
-    func show_review(){
+    @IBAction func show_review(){
+        self.uploadimageview.hidden = true
+        self.uploadimagewindow.hidden = true
+        UIView.animateWithDuration(0.7, animations: {
+            self.uploadimagewindow.center.y = -400
+        })
         self.performSegueWithIdentifier("JobItemtoReviewPhotosSegue", sender: nil)
     }
     
+    @IBAction func skip(){
+        self.uploadimageview.hidden = true
+        self.uploadimagewindow.hidden = true
+        UIView.animateWithDuration(0.7, animations: {
+            self.uploadimagewindow.center.y = -400
+        })
+        dispatch.responses_media_list.removeAllObjects()
+        self.show_review()
+    }
+    
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
-        println(info)
+        self.isDoneSelectingMedia = true
         var mediaType : String = info[UIImagePickerControllerMediaType] as! String
         if (mediaType == "public.movie"){
             let tempImage = info[UIImagePickerControllerMediaURL] as! NSURL!
@@ -358,29 +382,31 @@ class JobsListItemViewController: UIViewController,UICollectionViewDataSource, U
             dispatch.responses_media_list.addObject(media)
             
             dismissViewControllerAnimated(true, completion: nil);
-            self.take_picture()
+            self.uploadimagecollectionview.reloadData()
             //self.performSegueWithIdentifier("ShowVideoSegue", sender: self)
         }else{
             var media = Media(temptype: "image", tempdata: info[UIImagePickerControllerOriginalImage] as! UIImage)
             dispatch.responses_media_list.addObject(media)
             dismissViewControllerAnimated(true, completion: nil);
-            self.take_picture()
+            self.uploadimagecollectionview.reloadData()
         }
     }
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingImage image: UIImage!, editingInfo: [NSObject : AnyObject]!) {
         println("did finish picking")
+        self.isDoneSelectingMedia = true
         var media = Media(temptype: "image", tempdata: image)
         dispatch.responses_media_list.addObject(media)
         dismissViewControllerAnimated(true, completion: nil);
-        self.take_picture();
+        self.uploadimagecollectionview.reloadData()
         return
     }
     
     func imagePickerControllerDidCancel(picker: UIImagePickerController) {
         println("Upload Pictures!")
+        self.isDoneSelectingMedia = true
         dismissViewControllerAnimated(true, completion: nil);
-        self.take_picture();
+        self.uploadimagecollectionview.reloadData()
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
